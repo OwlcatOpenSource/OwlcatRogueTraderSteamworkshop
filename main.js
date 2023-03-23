@@ -1,29 +1,44 @@
-const { app, BrowserWindow, Notification } = require('electron')
+'use strict';
+
+const { app, dialog, ipcMain, BrowserWindow, Notification } = require('electron')
 const greenworks = require('./greenworks/greenworks')
-const fs = require('fs');
+const model = require('./model')
+const path = require('path')
+const events = require('./events')
+const steam = require("./steam")
+const electronLog = require('electron-log')
 
-const window = (function() {
-	let _instance;
-	
-	function createInstance() {
-		return new BrowserWindow({
-			width: 800,
-			height: 600,
-			thickFrame: true,
-			webPreferences: {
-				nodeIntegration: true
-			}
-		})
-	}
-	
-	return {
-		getInstance: function() {
-			return _instance ?? (_instance = createInstance())
+console.log = electronLog.log;
+electronLog.catchErrors()
+
+global.model = model
+
+let win
+function createWindow() {
+	win = new BrowserWindow({
+		width: 1024,
+		height: 768,
+		webPreferences: {
+			preload: path.join(__dirname, 'preload.js'),
+			enableRemoteModule: true,
+			contextIsolation: false,
+			nodeIntegration: true
 		}
-	}
-})()
+	})
+	
+	return win
+}
 
-app.whenReady().then(onApplicationReady)
+app.whenReady().then(() => {
+	onApplicationReady()
+
+	app.on('activate', () => {
+		// On macOS it's common to re-create a window in the app when the
+		// dock icon is clicked and there are no other windows open.
+		if (BrowserWindow.getAllWindows().length === 0)
+			onApplicationReady()
+	})
+})
 
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') {
@@ -31,11 +46,34 @@ app.on('window-all-closed', () => {
 	}
 })
 
-app.on('activate', () => {
-	if (BrowserWindow.getAllWindows().length === 0) {
-		onApplicationReady()
-	}
+ipcMain.on(events.renderer.selectModificationDirectory, selectModification)
+ipcMain.on(events.renderer.publishModification, publishModification)
+
+ipcMain.on(events.renderer.refreshInstalledModificationsList, () => {
+	refreshInstalledModifications()
+		.finally(() => win.webContents.send(events.main.installedModificationsListUpdated))
 })
+
+ipcMain.on(events.renderer.refreshWorkshopModificationsList, () => {
+	refreshWorkshopModifications()
+		.finally(() => win.webContents.send(events.main.workshopModificationsListUpdated))
+})
+
+function onApplicationReady() {
+	console.log('Application ready.')
+	
+	try {
+		greenworks.init()
+	} catch (e) {
+		console.log(e)
+	}
+	
+	createWindow()
+	win.show()
+	win.loadFile(path.join(__dirname, 'view/index.html'))
+		.then(onUIReady)
+		.catch((e) => console.log('index.html isn\'t loaded: ' + e))
+}
 
 function showNotification(title, body) {
 	const notification = {
@@ -46,58 +84,79 @@ function showNotification(title, body) {
 	new Notification(notification).show()
 }
 
-function onApplicationReady() {
-	window.getInstance().loadFile('index.html').then(onUIReady)
-}
-
 function onUIReady() {
-	try {
-		greenworks.init()
-		showNotification("Steam", "Steam is launched (appid " + greenworks.getAppId() + ")")
-		// uploadModification()
-		// getModificationInfo()
-	}
-	catch (e) {
-		console.log(e)
-		showNotification("Steam", "Steam isn't launched")
-	}
+	console.log('UI ready.')
+	refreshAll()
 }
 
-function uploadModification() {
-	function success(handle) {
-		console.log("success: " + handle)
-	}
-	
-	function fail(error) {
-		console.log("error: " + error)
-	}
-	
-	function progress(p) {
-		console.log("progress: " + p)
-	}
-	
-	const path = "C:\\Users\\owladmin\\AppData\\LocalLow\\Owlcat Games\\Pathfinder Wrath Of The Righteous\\Modifications\\TestModification.zip"
-	greenworks.ugcPublish(path, "TestWorkshopItem", "TestWorkshopItem", "",  success, fail, progress)
+function refreshAll() {
+	Promise.all([refreshInstalledModifications(), refreshWorkshopModifications()])
+		.finally(() => win.webContents.send(events.main.allModificationsListsUpdated))
 }
 
-function getModificationInfo() {
-	function success(results) {
-		console.log("subscribed items:")
-		results.forEach(i => {
-			const folder = greenworks.ugcGetItemInstallInfo(i.publishedFileId).folder
-			console.log("\t" + folder)
+async function refreshInstalledModifications() {
+	await steam.syncSubscribedWorkshopItems()
+		.then(async items => {
+			console.log("Subscribed workshop items: " + items.length)
+
+			await model.update(items)
 		})
+		.catch(async error => {
+			console.log("Failed to get subscribed workshop items: " + error)
+
+			await model.update()
+		}
+	)
+}
+
+async function refreshWorkshopModifications() {
+	await steam.loadWorkshopItems()
+		.then(async items => {
+			console.log("Workshop items: " + items.length)
+
+			model.workshopItems = items
+		})
+		.catch(async error => {
+			console.log("Failed to get workshop items: " + error)
+		})
+}
+
+function selectModification() {
+	let directoryPath = dialog.showOpenDialogSync({
+		properties: ['openDirectory']
+	})
+	model.selectModification(directoryPath[0])
+	console.log('Modification for publish:')
+	console.log(model.getSelectedModification())
+
+	win.webContents.send(events.main.selectedModificationUpdated)
+}
+
+function publishModification() {
+	const modification = model.getSelectedModification()
+	function success(handle) {
+		console.log("Publish success: " + handle)
+
+		modification.publishError = null
+		modification.workshopId = handle || modification.workshopId
+		win.webContents.send(events.main.modificationPublished)
 	}
 
 	function fail(error) {
-		console.log("failed to get subscribed items: " + error)
+		console.log("Publish error: " + error)
+
+		if (modification != null) {
+			modification.publishError = error
+		}
+
+		win.webContents.send(events.main.modificationPublished)
 	}
 
-	greenworks.ugcGetUserItems(
-		{app_id: greenworks.getAppId(), page_num: 1}, 
-		greenworks.UGCMatchingType.Items,
-		greenworks.UserUGCListSortOrder.SubscriptionDateDesc,
-		greenworks.UserUGCList.Subscribed,
-		success,
-		fail)
+	function progress(p) {
+		console.log("Publish progress: " + p)
+	}
+
+	steam.publish(modification, progress)
+		.then(success)
+		.catch(fail)
 }

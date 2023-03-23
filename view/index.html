@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html style="height: 100%;">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello World!</title>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self'" />
+
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+</head>
+<body style="background: white; height: 100%; max-height: 100%">
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <button class="nav-link active" id="nav-manage-tab" data-bs-toggle="tab" data-bs-target="#nav-manage" type="button" role="tab" aria-controls="nav-manage" aria-selected="true">
+                Manage
+            </button>
+            <button class="nav-link" id="nav-publish-tab" data-bs-toggle="tab" data-bs-target="#nav-publish" type="button" role="tab" aria-controls="nav-publish" aria-selected="false">
+                Publish
+            </button>
+        </div>
+    </nav>
+
+    <div class="tab-content m-3" id="nav-tabContent">
+        <div class="tab-pane fade show active" id="nav-manage" role="tabpanel" aria-labelledby="nav-manage-tab">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-sm d-flex justify-content-around">
+                        <strong class="align-middle">Installed</strong>
+                        <button type="button" class="btn btn-primary" id="refresh-installed-modifications">Refresh</button>
+                    </div>
+
+                    <div class="col-sm d-flex justify-content-around">
+                        <strong class="align-middle">Workshop</strong>
+                        <button type="button" class="btn btn-primary" id="refresh-workshop-modifications">Refresh</button>
+                    </div>
+                </div>
+                
+                <div class="row justify-content-center">
+                    <div class="col-sm m-1">
+                        <div class="container overflow-auto">
+                            <div class="list-group" id="installed-modifications-list">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm m-1">
+                        <div class="container overflow-auto">
+                            <div class="list-group" id="workshop-modifications-list">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-pane fade" id="nav-publish" role="tabpanel" aria-labelledby="nav-publish-tab">
+            <strong class="align-middle">Publish</strong>
+            <table class="table table-bordered border-primary" id="selected-modification">
+                <tbody>
+                    <tr>
+                        <td class="col-3 m-1">
+                            Directory:
+                        </td>
+                        <td class="col m-1">
+                            <span class="modification-directory">none</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-3 m-1">
+                            Unique name:
+                        </td>
+                        <td class="col m-1">
+                            <span class="modification-unique-name">none</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-3 m-1">
+                            Version:
+                        </td>
+                        <td class="col m-1">
+                            <span class="modification-version">none</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-3 m-1">
+                            Display Name:
+                        </td>
+                        <td class="col m-1">
+                            <span class="modification-display-name">none</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-3 m-1">
+                            Description:
+                        </td>
+                        <td class="col m-1">
+                            <span class="modification-description">none</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="input-group mb-3" id="modification-workshop-id">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Workshop ID</span>
+                </div>
+                <input type="text" class="form-control">
+            </div>
+            <button type="button" class="btn btn-primary" id="select-modification-directory">Select</button>
+            <button type="button" class="btn btn-primary" id="publish-modification">Publish</button>
+            <br>
+            <span id="modification-publish-error" style="color:red;"></span>
+        </div>
+    </div>
+
+    <div class="container-fluid position-fixed h-100 w-100"
+         style="display: none; top: 0; background-color: rgba(245, 245, 245, 0.6);"
+         id="loading-overlay">
+        <div class="spinner-border" role="status">
+        </div>
+    </div>
+</body>
+</html>
