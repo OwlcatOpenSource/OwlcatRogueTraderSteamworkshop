@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Hello World!</title>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+</head>
+<body style="background: white;">
+<h1>Hello World!</h1>
+<p>
+    We are using node <script>document.write(process.versions.node)</script>,
+    Chrome <script>document.write(process.versions.chrome)</script>,
+    and Electron <script>document.write(process.versions.electron)</script>.
+    <br>
+    Upload Modification (zip): <input type="file" id="modification-zip"/>
+    <button id="upload-zip">Upload</button>
+    <br>
+    Upload Modification (dir): <input type="file" id="modification-dir" webkitdirectory/>
+    <button id="upload-dir">Upload</button>
+</p>
+</body>
+</html>
