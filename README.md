@@ -8,8 +8,8 @@ This is a simple application built on [Electron](https://www.electronjs.org/) fo
 
 ## Setup 
 Two `.bat` files are located in the repo root folder. Double click to run them in this order:
-1. setup.bat - will make a setup of js modules.
-2. start.bat - will run the app itself. 
+1. *setup.bat* - will make a setup of js modules.
+2. *start.bat* - will run the app itself. 
 
 In case 2 `.bat` files fail, you can try to set up and launch manually with steps given below. 
 
