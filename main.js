@@ -125,11 +125,14 @@ function selectModification() {
 	let directoryPath = dialog.showOpenDialogSync({
 		properties: ['openDirectory']
 	})
-	model.selectModification(directoryPath[0])
-	console.log('Modification for publish:')
-	console.log(model.getSelectedModification())
+	if (directoryPath && directoryPath[0]) {
 
-	win.webContents.send(events.main.selectedModificationUpdated)
+		model.selectModification(directoryPath[0])
+		console.log('Modification for publish:')
+		console.log(model.getSelectedModification())
+	}
+		win.webContents.send(events.main.selectedModificationUpdated)
+	
 }
 
 function publishModification() {

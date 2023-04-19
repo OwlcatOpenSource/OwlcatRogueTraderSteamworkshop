@@ -77,20 +77,20 @@ module.exports = (() => {
 			EnabledModifications: [],
 		},
 		
-		getPathfinderAppDataPath: (filename = "") => {
+		getRogueTraderAppDataPath: (filename = "") => {
 			return path.join(
 				(app || remote.app).getPath('appData'), 
 				"..", 
-				"LocalLow/Owlcat Games/Pathfinder Wrath Of The Righteous",
+				"LocalLow/Owlcat Games/WH 40000 RT",
 				filename);
 		},
 		
 		getModificationSettingsPath: () => {
-			return model.getPathfinderAppDataPath('OwlcatModificationManagerSettings.json')
+			return model.getRogueTraderAppDataPath('OwlcatModificationManagerSettings.json')
 		},
 
 		getDefaultModificationsFolderPath: () => {
-			return model.getPathfinderAppDataPath('Modifications')
+			return model.getRogueTraderAppDataPath('Modifications')
 		},
 
 		selectModification: (folderPath) => {
