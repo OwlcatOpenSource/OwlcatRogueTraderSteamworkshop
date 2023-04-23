@@ -3,6 +3,7 @@
 const modification = require('./modification')
 const path = require('path')
 const fs = require('fs')
+const fs_extra = require('fs-extra')
 const {app, remote} = require('electron')
 const extract = require("extract-zip");
 
@@ -13,8 +14,9 @@ module.exports = (() => {
 	function updateInstalledModifications() {
 		model.installedModifications = []
 		
-		const modificationSourceFolders = model.modificationSettings.SourceDirectories
-			.concat(model.getDefaultModificationsFolderPath());
+		const modificationSourceFolders = (model.modificationSettings.SourceDirectories
+			.concat(model.getDefaultModificationsFolderPath())).concat(model.getDefaultUmmModificationsFolderPath())
+		
 		for (const modificationsFolderPath of modificationSourceFolders) {
 			try {
 				const fileNames = fs.readdirSync(modificationsFolderPath)
@@ -55,13 +57,39 @@ module.exports = (() => {
 			}
 		}
 
+		//Check for subscribed workshop mods and install them in game
 		for (const item of items) {
 			if (!model.installedModifications.some(i => i.workshopId === item.id)) {
+				let itemPath = item.path
 				const targetFolderName = path.basename(item.path)
-				const targetFolderPath = path.join(model.getDefaultModificationsFolderPath(), targetFolderName)
-				await extract(item.path, {dir: targetFolderPath}).then(() => {
+				const targetItemFolderPath = itemPath.replace(targetFolderName, '')
+				const tempFolderPath = path.join(targetItemFolderPath, 'temp', targetFolderName)
+				const tempFolderInfoFilePath = path.join(tempFolderPath, 'Info.json')
+				let targetFolderPath = path.join(model.getDefaultModificationsFolderPath(), targetFolderName)
+				
+				//Extract .bin mod file into ./temp folder
+				await extract(item.path, {dir: tempFolderPath}).then(() => {
+					//Check if Info.json file exists -> UMM mod. Otherwise Owlcat mod. Select install folder according to that.
+					if(fs.existsSync(tempFolderInfoFilePath)) {
+						targetFolderPath = path.join(model.getDefaultUmmModificationsFolderPath(), targetFolderName)
+					}
+					else {
+						targetFolderPath = path.join(model.getDefaultModificationsFolderPath(), targetFolderName)
+					}
+					
+					//Move unarchived folder to game mods install folder 
+					fs_extra.moveSync(tempFolderPath, targetFolderPath)
+					
+					//Add workshop_id.txt file with steam workshop item id content to the mod folder
 					const workshopIdFilePath = path.join(targetFolderPath, workshopIdFileName)
 					fs.writeFileSync(workshopIdFilePath, item.id)
+					
+					// Remove 'garbage' temp folder
+					const tempFolder = path.join(targetItemFolderPath, 'temp')
+					if(fs.existsSync(tempFolder))
+					{
+						fs.rmdirSync(tempFolder, {recursive: true })
+					}
 				})
 			}
 		}
