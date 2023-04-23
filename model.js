@@ -77,6 +77,10 @@ module.exports = (() => {
 			EnabledModifications: [],
 		},
 		
+		/*
+		Path to .../appData/LocalLow/Owlcat Games/WH 40000 RT/.
+		Also known as Application.PersistentDataPath in Unity3d
+		 */
 		getRogueTraderAppDataPath: (filename = "") => {
 			return path.join(
 				(app || remote.app).getPath('appData'), 
@@ -85,19 +89,26 @@ module.exports = (() => {
 				filename);
 		},
 		
+		/*
+		Path to OwlcatModificationManagerSettings.json file in local AppData
+		 */
 		getModificationSettingsPath: () => {
 			return model.getRogueTraderAppDataPath('OwlcatModificationManagerSettings.json')
 		},
 
+		/*
+		Path to Modifications folder, where all OwlcatModificationManager mods are installed
+		 */
 		getDefaultModificationsFolderPath: () => {
 			return model.getRogueTraderAppDataPath('Modifications')
 		},
-		
+
+		/*
+		Path to UnityModManager folder, where all UMM mods are installed
+ 		*/
 		getDefaultUmmModificationsFolderPath: () => {
 			return model.getRogueTraderAppDataPath('UnityModManager')
 		},
-		
-		
 
 		selectModification: (folderPath) => {
 			model.selectedModification = modification.load(folderPath)

@@ -60,6 +60,9 @@ ipcMain.on(events.renderer.refreshWorkshopModificationsList, () => {
 		.finally(() => win.webContents.send(events.main.workshopModificationsListUpdated))
 })
 
+/*
+Application starting point
+ */
 function onApplicationReady() {
 	console.log('Application ready.')
 	
@@ -85,12 +88,19 @@ function showNotification(title, body) {
 	new Notification(notification).show()
 }
 
+/*
+Application's functionality entry point
+ */
 function onUIReady() {
 	console.log('UI ready.')
 	checkDefaultFolders()
 	refreshAll()
 }
 
+/*
+Check if all default folders and file for Modding System exist in Local App Data folder.
+Creating folders and file if they do not exist.
+ */
 function checkDefaultFolders() {
 	if (!fs.existsSync(model.getDefaultModificationsFolderPath()))
 	{
@@ -116,6 +126,10 @@ function refreshAll() {
 		.finally(() => win.webContents.send(events.main.allModificationsListsUpdated))
 }
 
+/*
+Check all mods user subscribes in Workshop and install them in the right place,
+depending on if mod's type (Owlcat or UMM). Also enabling them in OwlcatModificationManifest file.
+ */
 async function refreshInstalledModifications() {
 	await steam.syncSubscribedWorkshopItems()
 		.then(async items => {
@@ -131,6 +145,9 @@ async function refreshInstalledModifications() {
 	)
 }
 
+/*
+Refresh information about mods on Steam Workshop available for user to install/
+ */
 async function refreshWorkshopModifications() {
 	await steam.loadWorkshopItems()
 		.then(async items => {
