@@ -92,6 +92,12 @@ module.exports = (() => {
 		getDefaultModificationsFolderPath: () => {
 			return model.getRogueTraderAppDataPath('Modifications')
 		},
+		
+		getDefaultUmmModificationsFolderPath: () => {
+			return model.getRogueTraderAppDataPath('UnityModManager')
+		},
+		
+		
 
 		selectModification: (folderPath) => {
 			model.selectedModification = modification.load(folderPath)

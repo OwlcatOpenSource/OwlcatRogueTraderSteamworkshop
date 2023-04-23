@@ -7,6 +7,7 @@ const path = require('path')
 const events = require('./events')
 const steam = require("./steam")
 const electronLog = require('electron-log')
+const fs = require("fs");
 
 console.log = electronLog.log;
 electronLog.catchErrors()
@@ -86,7 +87,28 @@ function showNotification(title, body) {
 
 function onUIReady() {
 	console.log('UI ready.')
+	checkDefaultFolders()
 	refreshAll()
+}
+
+function checkDefaultFolders() {
+	if (!fs.existsSync(model.getDefaultModificationsFolderPath()))
+	{
+		console.log("Modifications folder doesn't exist. Creating new one.")
+		fs.mkdirSync(model.getDefaultModificationsFolderPath())
+	}
+
+	if(!fs.existsSync(model.getDefaultUmmModificationsFolderPath()))
+	{
+		console.log("UMM Modifications folder doesn't exist. Creating new one.")
+		fs.mkdirSync(model.getDefaultUmmModificationsFolderPath())
+	}
+
+	if(!fs.existsSync(model.getModificationSettingsPath()))
+	{
+		console.log("Modifications manifest file doesn't exist. Creating new one.")
+		fs.copyFileSync('OwlcatModificationManagerSettings.json', model.getModificationSettingsPath())
+	}
 }
 
 function refreshAll() {
