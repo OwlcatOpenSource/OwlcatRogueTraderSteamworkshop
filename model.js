@@ -67,30 +67,54 @@ module.exports = (() => {
 				const tempFolderInfoFilePath = path.join(tempFolderPath, 'Info.json')
 				let targetFolderPath = path.join(model.getDefaultModificationsFolderPath(), targetFolderName)
 				
-				//Extract .bin mod file into ./temp folder
-				await extract(item.path, {dir: tempFolderPath}).then(() => {
-					//Check if Info.json file exists -> UMM mod. Otherwise Owlcat mod. Select install folder according to that.
-					if(fs.existsSync(tempFolderInfoFilePath)) {
-						targetFolderPath = path.join(model.getDefaultUmmModificationsFolderPath(), targetFolderName)
-					}
-					else {
-						targetFolderPath = path.join(model.getDefaultModificationsFolderPath(), targetFolderName)
-					}
-					
-					//Move unarchived folder to game mods install folder 
-					fs_extra.moveSync(tempFolderPath, targetFolderPath)
-					
-					//Add workshop_id.txt file with steam workshop item id content to the mod folder
-					const workshopIdFilePath = path.join(targetFolderPath, workshopIdFileName)
-					fs.writeFileSync(workshopIdFilePath, item.id)
-					
-					// Remove 'garbage' temp folder
-					const tempFolder = path.join(targetItemFolderPath, 'temp')
-					if(fs.existsSync(tempFolder))
-					{
-						fs.rmdirSync(tempFolder, {recursive: true })
-					}
-				})
+				 try {
+					//Extract .bin mod file into ./temp folder
+					await extract(item.path, {dir: tempFolderPath}).then(() => {
+						//Check if Info.json file exists -> UMM mod. Otherwise Owlcat mod. Select install folder according to that.
+						if (fs.existsSync(tempFolderInfoFilePath)) {
+							targetFolderPath = path.join(model.getDefaultUmmModificationsFolderPath(), targetFolderName)
+						} else {
+							targetFolderPath = path.join(model.getDefaultModificationsFolderPath(), targetFolderName)
+						}
+
+						try {
+							//Move unarchived folder to game mods install folder 
+							fs_extra.moveSync(tempFolderPath, targetFolderPath)
+						}
+						catch (e) {
+							console.log("Exception while moving mod from temp folder to target path: " + e)
+							console.log("tempPath : " + tempFolderPath)
+							console.log("targetPath : " + targetFolderPath)
+							throw new Error(e)
+						}
+						//Add workshop_id.txt file with steam workshop item id content to the mod folder
+						const workshopIdFilePath = path.join(targetFolderPath, workshopIdFileName)
+						try {
+							fs.writeFileSync(workshopIdFilePath, item.id)
+						}
+						catch (e) {
+							console.log("Exception while creating WorkshopId file : " + e)
+							console.log("workshopIdFile path : " + workshopIdFilePath)
+							throw new Error(e)
+						}
+						// Remove 'garbage' temp folder
+						const tempFolder = path.join(targetItemFolderPath, 'temp')
+						try {
+							if (fs.existsSync(tempFolder)) {
+								fs.rmdirSync(tempFolder, {recursive: true})
+							}
+						}
+						catch (e) {
+							console.log("Exception while removing temp folder: " + e)
+							console.log("tempFolder : " + tempFolder)
+							throw new Error(e)
+						}
+					})
+				}
+				catch (e) {
+					console.log("Exception while extracting mod archive: " + e)
+					throw new Error(e)
+				}
 			}
 		}
 	}
