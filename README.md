@@ -46,7 +46,7 @@ What can be done using this tool:
 1. Install existing mod from Steam Workshop to the game.
 2. Uninstall existing mod from Steam Workshop from the game.
 3. Publish your own mod to Steam Workshop.
-4. Endble/disable mods used in game.
+4. Enable/disable mods used in game.
 
 ### Installing mod from Steam Workshop.
 1. Launch Steam client and find Warhammer 40000: Rogue Trader (WHRT) in your game library.
@@ -100,3 +100,17 @@ Create a file called `OwlcatModificationSettings.json` and place it near Info.js
     "BlueprintPatches": []
 }
 ```
+
+### Publishing your mod to Steam Workshop.
+1. Launch OwlcatRogueTraderSteamworkshop tool. Open "Publish" tab at the top left of the UI.
+2. In the Publish window click "Select" button.
+3. In appeared dialog window select a folder of your mod.
+4. Aftere selecting the directory fields in Publish window will be filled with the mod info.
+5. If everything is correct, leave "Workshop ID" field empty.
+6. Click "Publish" button and with until progress bar disappears.
+7. If the upload was successfull a value in "Workshop ID" field will appear. Thats id of your mod in Steam Workshop. Note that it takes some time to make your mod appear in Steam Workshop after publishing. In most cases it takes about 5-10 minutes and that's Steam's feature and we can do nothing with it. At this moment publishing is done.
+8. If an error occured while uploading it will be shown in tool written in red color. That's most likely Steam API error. Steam API errors are very general and describe nothing about what has happened. 
+9. If you are given something like "Steam Cloud upload error" try to wait an hour and try to upload your mod again. Somethimes it works. If that doesn't help feel free to ask for help.
+
+### Enable/disable mods used in game.
+Enabled mod means that it is installed and will work in game. Disabled mod is istalled but won't be launched in game. Launch OwlcatRogueTraderSteamworkshop tool. Under "Installed" mod installed mods will be listed with checkbox near each mod. Checkbox with tick means enabled mod, without a tick - disabled. Just click in the checkbox to enable or disable a mod.
