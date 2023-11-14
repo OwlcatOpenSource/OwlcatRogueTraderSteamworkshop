@@ -35,16 +35,10 @@ let modification = (function()
 			if (!hasNotEmptyStringProperty(manifest, "UniqueName"))
 				throw Error("UniqueName is missing in manifest file " + manifestFileName)
 			
-			let workshopId = null
-			const workshopIdPath = path.join(folderPath, workshopIdFileName)
-			if (fs.existsSync(workshopIdPath)) {
-				workshopId = fs.readFileSync(workshopIdPath).toString()
-			}
-			
 			return {
 				path: folderPath,
 				id: manifest.UniqueName.replaceAll(' ', '-'),
-				workshopId: workshopId,
+				workshopId: manifest.WorkshopId || null,
 				publishError: null,
 				manifest: {
 					UniqueName: manifest.UniqueName || "",

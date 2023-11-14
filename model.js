@@ -8,7 +8,6 @@ const {app, remote} = require('electron')
 const extract = require("extract-zip");
 
 module.exports = (() => {
-	const workshopIdFileName = 'workshop_id.txt'
 	let model;
 
 	function updateInstalledModifications() {
