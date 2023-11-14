@@ -117,7 +117,7 @@ To include a thumbnail place the image into the root directory next to `OwlcatMo
 9. If you are given something like "Steam Cloud upload error" try to wait an hour and try to upload your mod again. Somethimes it works. If that doesn't help feel free to ask for help.
 
 ### Updating your published mod.
-1. If it doesn't already exist, add the WorkshopId field to your OwlcatModificationManifest.json.
+1. If it doesn't already exist, add the WorkshopId field to your `OwlcatModificationManifest.json`.
 2. As value, add the Workshop Item ID of your mod (as a string).
 3. Follow the publishing steps. The tool should automatically recognize the existing mod and update it instead of publishing a new one.
 
