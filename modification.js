@@ -24,7 +24,13 @@ let modification = (function()
 			if (!fs.existsSync(manifestPath))
 				throw Error("Can't find manifest file: " + manifestFileName)
 			
-			const manifest = JSON.parse(fs.readFileSync(manifestPath))
+			let manifest = null
+			try {
+				manifest = JSON.parse(fs.readFileSync(manifestPath))
+			} catch (error) {
+				console.error(error)
+				throw Error("Probably encountered malformed OwlcatModificationManifest.json!")
+			}
 			
 			if (!hasNotEmptyStringProperty(manifest, "UniqueName"))
 				throw Error("UniqueName is missing in manifest file " + manifestFileName)
@@ -47,6 +53,7 @@ let modification = (function()
 					Description: manifest.Description || "",
 					Author: manifest.Author || "",
 					Repository: manifest.Repository || "",
+					ImageName: manifest.ImageName || "",
 					HomePage: manifest.HomePage || "",
 					Dependencies: [], // [{Name: string, Version: string}]
 				},

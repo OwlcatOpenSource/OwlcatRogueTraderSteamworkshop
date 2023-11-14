@@ -51,18 +51,22 @@ module.exports = (() => {
 					console.log('Archived: total bytes ' + archive.pointer() + ', ' + tempFilePath);
 
 					try {
+						let imagePath = ""
+						if (modification.manifest.ImageName) 
+							imagePath = modification.path + "\\" + modification.manifest.ImageName
 						if (modification.workshopId == null) {
 							greenworks.ugcPublish(
 								tempFilePath,
 								modification.manifest.DisplayName,
 								modification.manifest.Description,
-								"", success, fail, progress)
+								imagePath,
+								success, fail, progress)
 						} else {
 							greenworks.updatePublishedWorkshopFile(
 								{tags: []},
 								modification.workshopId,
 								tempFilePath,
-								"",
+								imagePath,
 								modification.manifest.DisplayName,
 								modification.manifest.Description, success, fail, progress)
 						}
@@ -130,11 +134,16 @@ module.exports = (() => {
 				return (results) =>
 				{
 					results.forEach(i => {
-						const folderPath = greenworks.ugcGetItemInstallInfo(i.publishedFileId).folder
-						items.push({
-							id: i.publishedFileId,
-							path: folderPath
-						})
+						// Returns undefined if the information could not be fetched
+						const itemInfo = greenworks.ugcGetItemInstallInfo(i.publishedFileId)
+						if (typeof itemInfo !== "undefined")
+						{
+							const folderPath = itemInfo.folder
+							items.push({
+								id: i.publishedFileId,
+								path: folderPath
+							})
+						}
 					})
 	
 					if (results.length > 0) {

@@ -103,12 +103,16 @@ module.exports = (() => {
 			const version = (selectedModification || notSelectedModification).manifest.Version;
 			const displayName = (selectedModification || notSelectedModification).manifest.DisplayName;
 			const description = (selectedModification || notSelectedModification).manifest.Description;
+			const author = (selectedModification || notSelectedModification).manifest.Author;
+			const imagename = (selectedModification || notSelectedModification).manifest.ImageName;
 			
 			$(selectedModificationContainer).find('.modification-directory').text(directoryPath)
 			$(selectedModificationContainer).find('.modification-unique-name').text(uniqueName)
 			$(selectedModificationContainer).find('.modification-version').text(version)
 			$(selectedModificationContainer).find('.modification-display-name').text(displayName)
 			$(selectedModificationContainer).find('.modification-description').text(description)
+			$(selectedModificationContainer).find('.modification-author').text(author)
+			$(selectedModificationContainer).find('.modification-image-name').text(imagename)
 			
 			if (selectedModification == null) {
 				renderer.getWorkshopIdBlock().hide()
