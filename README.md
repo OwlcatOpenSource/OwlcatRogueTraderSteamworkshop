@@ -103,7 +103,7 @@ Create a file called `OwlcatModificationSettings.json` and place it near Info.js
 }
 ```
 
-To include a Thumbnail place the image into the root directory next to OwlcatModificationManifest.json and provide the name of the file as value for the ImageName key in the Manifest.
+To include a thumbnail place the image into the root directory next to `OwlcatModificationManifest.json` and provide the name of the file as value for the `ImageName` key in the Manifest.
 
 ### Publishing your mod to Steam Workshop.
 1. Launch OwlcatRogueTraderSteamworkshop tool. Open "Publish" tab at the top left of the UI.
