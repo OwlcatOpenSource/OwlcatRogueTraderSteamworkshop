@@ -136,7 +136,7 @@ module.exports = (() => {
 			return path.join(
 				(app || remote.app).getPath('appData'), 
 				"..", 
-				"LocalLow/Owlcat Games/WH 40000 RT",
+				"LocalLow/Owlcat Games/Warhammer 40000 Rogue Trader",
 				filename);
 		},
 		
