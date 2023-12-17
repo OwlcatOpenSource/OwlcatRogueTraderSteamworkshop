@@ -28,6 +28,7 @@ module.exports = {
 		postPackage: async (forgeConfig, options) => {
 			const outputPath = options.outputPaths[0]
 			fs.copyFileSync('./steam_appid.txt', path.join(outputPath, 'steam_appid.txt'))
+			fs.copyFileSync('./OwlcatModificationManagerSettings.json', path.join(outputPath,'OwlcatModificationManagerSettings.json'))
 		}
 	}
 }
