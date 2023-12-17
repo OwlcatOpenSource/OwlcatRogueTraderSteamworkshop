@@ -38,6 +38,9 @@ In case 2 `.bat` files fail, you can try to set up and launch manually with step
 3. Run `npm i`.
 4. To launch the app run `node_modules\electron\dist\electron.exe .`
 
+##Building the tool
+Building process is very simple and based on electron-forge. To create a build for your OS simply run `npm run make` in Bash/Command Prompt
+
 ## Inmportant notice
 To make OwlcatRogueTraderSteamworkshop tool run and work you need to have Steam client on your PC. Steam should be launched and you should be logged in. If you try to use this tool without Steam running all the functionality will fail with random Steam API errors.
 
