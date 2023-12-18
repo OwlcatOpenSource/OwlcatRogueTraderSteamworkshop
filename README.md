@@ -1,6 +1,8 @@
 # OwlcatRogueTraderSteamworkshop
 This is a simple application built on [Electron](https://www.electronjs.org/) for using Steam Workshop for Warhammer 40000: Rogue Trader. It's minumalistic with main goal to give ability to upload your mods to Workshop.
 
+Get latest version in [Releases](https://github.com/OwlcatOpenSource/OwlcatRogueTraderSteamworkshop/releases).
+
 ## Requirements
 1. [node.js](https://nodejs.org/en/download)
 2. npm - ships as a part of node.js
