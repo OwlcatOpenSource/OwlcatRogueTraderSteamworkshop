@@ -17,12 +17,17 @@ let modification = (function()
 	
 	return {
 		load: function(folderPath) {
-			if (!fs.existsSync(folderPath))
-				throw Error("Can't find folder: " + folderPath)
-			
+			if (!fs.existsSync(folderPath)) 
+			{
+				console.log("Can't find mod folder: " + folderPath + " .Skipping.")
+				return null
+			}
 			const manifestPath = path.join(folderPath, manifestFileName)
 			if (!fs.existsSync(manifestPath))
-				throw Error("Can't find manifest file: " + manifestFileName)
+			{
+				console.log("Can't find manifest file at path: " + manifestPath  + " .Skipping.")
+				return null;
+			}
 			
 			let manifest = null
 			try {
