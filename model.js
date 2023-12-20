@@ -6,6 +6,8 @@ const fs = require('fs')
 const fs_extra = require('fs-extra')
 const {app, remote} = require('electron')
 const extract = require("extract-zip");
+const workshopIdFileName = 'workshop_id.txt'
+
 
 module.exports = (() => {
 	let model;
@@ -26,7 +28,9 @@ module.exports = (() => {
 						if (!stats.isDirectory())
 							continue
 
-						model.installedModifications.push(modification.load(modificationPath))
+						let mod = modification.load(modificationPath)
+						if(mod != null)
+							model.installedModifications.push(mod)
 					} catch (e) {
 						console.log(e)
 					}
@@ -59,7 +63,39 @@ module.exports = (() => {
 		//Check for subscribed workshop mods and install them in game
 		for (const item of items) {
 			if (!model.installedModifications.some(i => i.workshopId === item.id)) {
+				//We expect to get ...legacy.bin archive with mod from workshop, if mod was created with mod template and
+				// uploaded with this tool. But some UMM created mods are uploaded as an archive. So their template 
+				// name could be "name".zip(rar).
 				let itemPath = item.path
+				console.log("item path " + item.path)
+				if(!fs.lstatSync(itemPath).isFile())
+				{
+					console.log("...legacy.bin formatted file not found. Inspecting folder for custom archives...")
+					let files = fs.readdirSync(itemPath)
+					if(files.length > 1)
+					{
+						throw new Error("More than one file in mod directory " + itemPath)
+					}
+					let itemToInspect = files[0];
+					if(itemToInspect.endsWith("zip") || itemToInspect.endsWith("rar") || itemToInspect.endsWith("bin")) {
+						let itemToInspectFullPath = item.path + "\\" + itemToInspect
+						//Fail finding archive mod files
+						if(!fs.lstatSync(itemToInspectFullPath).isFile()) {
+							console.log("File not found: " + itemToInspectFullPath)
+							continue
+						}
+						//Fixing path to mod archive
+						console.log("Found potential mod archive with mod: " + itemToInspect)
+						console.log("Trying to install...")
+						item.path = itemToInspectFullPath
+						console.log("Full item path: " + item.path)
+					}
+					else
+					{
+						continue
+					}
+				}
+				
 				const targetFolderName = path.basename(item.path)
 				const targetItemFolderPath = itemPath.replace(targetFolderName, '')
 				const tempFolderPath = path.join(targetItemFolderPath, 'temp', targetFolderName)
@@ -78,7 +114,12 @@ module.exports = (() => {
 
 						try {
 							//Move unarchived folder to game mods install folder 
-							fs_extra.moveSync(tempFolderPath, targetFolderPath)
+							if(fs.existsSync(targetFolderPath)){
+								console.log("Mod target directory already exists : " + targetFolderPath + " . Consider removing the folder. Skipping install.")
+							}
+							else {
+								fs_extra.moveSync(tempFolderPath, targetFolderPath)
+							}
 						}
 						catch (e) {
 							console.log("Exception while moving mod from temp folder to target path: " + e)
@@ -162,7 +203,9 @@ module.exports = (() => {
 		},
 
 		selectModification: (folderPath) => {
-			model.selectedModification = modification.load(folderPath)
+			let modification = modification.load(folderPath)
+			if(modification != null)
+				model.selectedModification = modification 
 		},
 
 		getSelectedModification: () => {
