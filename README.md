@@ -42,7 +42,7 @@ In case 2 `.bat` files fail, you can try to set up and launch manually with step
 
 ## Building the tool
 Building process is very simple and based on electron-forge. To create a build for your OS simply run `npm run make` in Bash/Command Prompt.
-After that you can find a build folder at `.\out\owltat-modification-manager<current_arch_and_os>.exe`
+After that you can find a build folder at `.\out\owlcat-modification-manager<current_arch_and_os>.exe`
 
 ## Inmportant notice
 To make OwlcatRogueTraderSteamworkshop tool run and work you need to have Steam client on your PC. Steam should be launched and you should be logged in. If you try to use this tool without Steam running all the functionality will fail with random Steam API errors.
